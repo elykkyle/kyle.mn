@@ -1,6 +1,7 @@
 name: Deploy PR for Testing
 
 on:
+  workflow_dispatch
   pull_request:
     branches:
       - main
@@ -23,6 +24,8 @@ jobs:
           role-session-name: deploy-to-aws
           aws-region: us-east-2
 
+      - name: Echo Ref 
+        run: echo "$GITHUB_REF"
 
       - name: Terraform fmt
         id: fmt
@@ -44,3 +47,7 @@ jobs:
       - name: Terraform Apply
         id: appply
         run: terraform apply -auto-approve
+
+      - name: Get API URL
+        id: api-url
+        run: echo "$(terraform output invoke_url)"
