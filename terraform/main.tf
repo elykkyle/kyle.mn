@@ -14,12 +14,6 @@ terraform {
       version = "3.5.1"
     }
   }
-  # cloud {
-  #   organization = "elykkyle"
-  #   workspaces {
-  #     name = "cloud-resume-dev"
-  #   }
-  # }
   backend "s3" {
     bucket = "kyle.mn-terraform-state"
     key    = "main/terraform.tfstate"
