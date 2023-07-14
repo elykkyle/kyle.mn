@@ -168,23 +168,8 @@ module "s3_cf_logging" {
 
   acl = "log-delivery-write"
 
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Id": "S3-LOGGING-POLICY",
-    "Statement": [
-        {
-            "Sid": "S3-Allow-Logging",
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "logging.s3.amazonaws.com"
-            },
-            "Action": "s3:PutObject",
-            "Resource": "${module.s3_cf_logging.s3_bucket_arn}/*"
-        }
-    ]
-}
-EOF
+  control_object_ownership = true
+  object_ownership         = "BucketOwnerPreferred"
 
-  attach_policy = true
+  attach_access_log_delivery_policy = true
 }
