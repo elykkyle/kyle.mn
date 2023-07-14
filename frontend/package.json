@@ -1,0 +1,15 @@
+{
+  "name": "kylewilliams.dev",
+  "version": "1.0.0",
+  "description": "This is the repo for my personal site. Written simply in HTML and CSS. - Site is hosted on AWS as a static site served from an S3 bucket. - DNS provided by AWS Route 53. - HTTPS provided by CloudFront with SSL Cert for domain. - GitHub Actions automatically syncs changes to repo to S3 bucket and invalidates CloudFront cache.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^12.16.0"
+  }
+}
