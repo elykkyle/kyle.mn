@@ -69,15 +69,15 @@ jobs:
         run: pwd
 
       - name: Update js URL
-        working-directory: src/
+        working-directory: frontend/
         id: js-api_url
-        run: sed -i -e 's&PLACEHOLDER&${{ env.INVOKE_URL }}&' js/counter.js
+        run: sed -i -e 's&PLACEHOLDER&${{ env.INVOKE_URL }}&' src/js/counter.js
 
       - name: Upload site to s3
-        working-directory: src/
+        working-directory: frontend/
         id: upload-to-s3
         run: |
-          aws s3 sync ./ s3://${{env.S3_DOMAIN}} --delete --follow-symlinks
+          aws s3 sync ./src s3://${{env.S3_DOMAIN}} --delete --follow-symlinks
 
 
       
