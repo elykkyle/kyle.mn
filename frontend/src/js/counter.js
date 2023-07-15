@@ -1,7 +1,7 @@
 url = 'PLACEHOLDER'
 
 const visitorCount = document.getElementById('visitor-count')
-const countRequest = new Request(url)
+const countRequest = new Request(`${url}/visitorCount`)
 
 fetch(countRequest)
   .then((res) => {
