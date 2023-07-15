@@ -53,8 +53,8 @@ jobs:
       - name: Get Terraform Ouputs
         id: tf-outputs
         run: |
-          echo "inovke_url=$(terraform output invoke_url)" >> "$GITHUB_OUTPUT"
-          echo "s3_domain=$(terraform output static_s3_domain)" >> "$GITHUB_OUTPUT"
+          echo "inovke_url=$(terraform output -raw invoke_url)" >> "$GITHUB_OUTPUT"
+          echo "s3_domain=$(terraform output -raw static_s3_domain)" >> "$GITHUB_OUTPUT"
   frontend:
     runs-on: ubunutu-latest
     needs: terraform
