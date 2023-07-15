@@ -12,12 +12,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    defaults:
-      run:
-        working-directory: terraform/
-    outputs:
-      invoke_url: ${{steps.set-invoke-url.outputs.inovke_url}}
-      s3_domain: ${{steps.set-s3-domain.outputs.s3_domain}}
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
@@ -25,9 +19,6 @@ jobs:
           role-to-assume: arn:aws:iam::784714698706:role/TEMP-GH-ACTIONS
           role-session-name: deploy-to-aws
           aws-region: us-east-2
-
-      - name: Echo PWD 
-        run: pwd
 
       - name: Terraform fmt
         id: fmt
@@ -63,10 +54,7 @@ jobs:
       - name: Set Static S3 domain
         id: set-s3-domain
         working-directory: terraform/
-        run: echo "S3_DOMAIN=$(terraform output -raw static_s3_domain)" >> "$GITHUB_ENV"
-      
-      - name: Echo PWD 
-        run: pwd
+        run: echo "S3_ID=$(terraform output -raw static_s3_id)" >> "$GITHUB_ENV"
 
       - name: Update js URL
         working-directory: frontend/
@@ -77,7 +65,7 @@ jobs:
         working-directory: frontend/
         id: upload-to-s3
         run: |
-          aws s3 sync ./src s3://${{env.S3_DOMAIN}} --delete --follow-symlinks
+          aws s3 sync ./src s3://${{env.S3_ID}} --delete --follow-symlinks
 
 
       

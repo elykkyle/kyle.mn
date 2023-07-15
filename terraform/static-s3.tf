@@ -48,6 +48,6 @@ EOF
 }
 
 
-output "static_s3_domain" {
-  value = module.s3_bucket_for_website.s3_bucket_bucket_domain_name
+output "static_s3_id" {
+  value = module.s3_bucket_for_website.s3_bucket_id
 }
