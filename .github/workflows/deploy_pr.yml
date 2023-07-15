@@ -67,7 +67,7 @@ jobs:
 
       - name: Update js URL
         id: js-api_url
-        run: sed -i -e '/PLACEHOLDER/${{ env.INVOKE_URL }}/' -f ./src/js/counter.js
+        run: sed -i -e 's&PLACEHOLDER&${{ env.INVOKE_URL }}&' ./src/js/counter.js
 
       - name: Upload site to s3
         id: upload-to-s3
