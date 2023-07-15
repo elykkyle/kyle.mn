@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  terraform:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -63,16 +63,16 @@ jobs:
       - name: Set Static S3 domain
         id: set-s3-domain
         working-directory: terraform/
-        run: echo "S3_DOMAIN=$(terraform output static_s3_domain)" >> "$GITHUB_env"
+        run: echo "S3_DOMAIN=$(terraform output static_s3_domain)" >> "$GITHUB_ENV"
 
       - name: Update js URL
         id: js-api_url
-        run: sed -i -e 's/PLACEHOLDER/${{ env.INVOKE_URL }}/' js/counter.js
-        
+        run: sed -i -e 's/PLACEHOLDER/${{ env.INVOKE_URL }}/' ./src/js/counter.js
+
       - name: Upload site to s3
         id: upload-to-s3
         run: |
-          aws s3 sync ./ s3://${{env.S3_DOMAIN}} --delete --follow-symlinks
+          aws s3 sync ./src s3://${{env.S3_DOMAIN}} --delete --follow-symlinks
 
 
       
