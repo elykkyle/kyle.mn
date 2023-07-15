@@ -16,12 +16,10 @@ jobs:
       run:
         working-directory: terraform/
     outputs:
-      invoke_url: ${{steps.api-url.outputs.inovke_url}}
+      invoke_url: ${{steps.set-invoke-url.outputs.inovke_url}}
+      s3_domain: ${{steps.set-s3-domain.outputs.s3_domain}}
     steps:
       - uses: actions/checkout@v3
-      # - uses: hashicorp/setup-terraform@v2
-      #   with:
-      #     terraform_wrapper: false
       - uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::784714698706:role/TEMP-GH-ACTIONS
@@ -59,6 +57,8 @@ jobs:
       - name: Set Static S3 domain
         id: set-s3-domain
         run: echo "s3_domain=$(terraform output static_s3_domain)" >> "$GITHUB_OUTPUT"
+
+      
 
   frontend:
     runs-on: ubunutu-latest
