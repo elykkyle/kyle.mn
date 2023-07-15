@@ -26,8 +26,8 @@ jobs:
           role-session-name: deploy-to-aws
           aws-region: us-east-2
 
-      - name: Echo Ref 
-        run: echo "$GITHUB_REF"
+      - name: Echo PWD 
+        run: pwd
 
       - name: Terraform fmt
         id: fmt
@@ -64,6 +64,9 @@ jobs:
         id: set-s3-domain
         working-directory: terraform/
         run: echo "S3_DOMAIN=$(terraform output -raw static_s3_domain)" >> "$GITHUB_ENV"
+      
+      - name: Echo PWD 
+        run: pwd
 
       - name: Update js URL
         working-directory: src/
