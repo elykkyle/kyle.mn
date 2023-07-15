@@ -50,9 +50,14 @@ jobs:
         id: appply
         run: terraform apply -auto-approve
 
-      - name: Get Terraform Ouputs
-        id: tf-outputs
-        run: echo "inovke_url=$(terraform output -raw invoke_url)" >> "$GITHUB_OUTPUT" && echo "s3_domain=$(terraform output -raw static_s3_domain)" >> "$GITHUB_OUTPUT"
+      - name: Set Invoke URL
+        id: set-invoke-url
+        run: echo "inovke_url=$(terraform output -raw invoke_url)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Static S3 domain
+        id: set-s3-domain
+        run: echo "s3_domain=$(terraform output -raw static_s3_domain)" >> "$GITHUB_OUTPUT"
+        
   frontend:
     runs-on: ubunutu-latest
     needs: terraform
