@@ -12,8 +12,7 @@ data "aws_route53_zone" "root" {
 
 resource "aws_acm_certificate" "cert" {
   provider                  = aws.east-1
-  domain_name               = "kyle.mn"
-  subject_alternative_names = ["${terraform.workspace}.kyle.mn"]
+  domain_name               = "${terraform.workspace}.kyle.mn"
   validation_method         = "DNS"
 
   lifecycle {
