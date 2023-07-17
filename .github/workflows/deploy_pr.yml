@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - '!main'
+      - '!kyle.mn/main'
   pull_request:
     branches:
       - main
@@ -25,6 +25,9 @@ jobs:
       - name: Set Branch Name
         run: echo "GH_BRANCH_NAME=$(git branch --show-current)" >> "$GITHUB_ENV"
 
+      - name: get env
+        run: env
+
       - name: Terraform fmt
         id: fmt
         working-directory: terraform/
@@ -38,7 +41,7 @@ jobs:
 
       - name: Set terraform workspace
         id: tf-workspace
-        run: terraform workspace select $GH_BRANCH_NAME -or-create
+        run: terraform workspace -or-create select $GH_BRANCH_NAME
         working-directory: terraform/
 
       - name: Terraform Validate
