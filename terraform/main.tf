@@ -11,7 +11,7 @@ terraform {
   }
   backend "s3" {
     bucket = "kyle.mn-terraform-state"
-    key    = "main/terraform.tfstate"
+    key    = "terraform.tfstate"
     region = "us-east-2"
   }
 

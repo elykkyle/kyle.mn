@@ -13,7 +13,7 @@ data "aws_route53_zone" "root" {
 resource "aws_acm_certificate" "cert" {
   provider                  = aws.east-1
   domain_name               = "kyle.mn"
-  subject_alternative_names = ["*.kyle.mn"]
+  subject_alternative_names = ["${terraform.workspace}.kyle.mn"]
   validation_method         = "DNS"
 
   lifecycle {
@@ -48,7 +48,7 @@ resource "aws_acm_certificate_validation" "cert" {
 }
 
 locals {
-  s3_origin_id = "kylemn"
+  s3_origin_id = "${terraform.workspace}-kylemn"
 }
 
 resource "aws_cloudfront_origin_access_control" "s3_oac" {
@@ -77,7 +77,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     prefix          = "cloudfront"
   }
 
-  aliases = ["kyle.mn"]
+  aliases = ["${terraform.workspace}.kyle.mn"]
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
@@ -140,7 +140,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 resource "aws_route53_record" "dns_record" {
   provider = aws.root-org
   zone_id  = data.aws_route53_zone.root.zone_id
-  name     = "kyle.mn"
+  name     = "${terraform.workspace}.kyle.mn"
   type     = "A"
   alias {
     name                   = aws_cloudfront_distribution.s3_distribution.domain_name
@@ -153,7 +153,7 @@ module "s3_cf_logging" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.14.0"
 
-  bucket_prefix = "kyle.mn-logging-"
+  bucket_prefix = "${terraform.workspace}.kyle.mn-logging-"
   force_destroy = true
 
   versioning = {

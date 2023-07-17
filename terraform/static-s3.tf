@@ -15,7 +15,7 @@ module "s3_bucket_for_website" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.14.0"
 
-  bucket_prefix = "kyle.mn-"
+  bucket_prefix = "${terraform.workspace}.kyle.mn-"
   force_destroy = true
 
   versioning = {

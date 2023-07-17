@@ -72,7 +72,7 @@ data "archive_file" "visitor_count" {
 
 resource "aws_lambda_function" "visitor_count" {
   filename      = "lambda_function_payload.zip"
-  function_name = "increment_visitor_count"
+  function_name = "${terraform.workspace}_increment_visitor_count"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "app.lambda_handler"
 
@@ -82,7 +82,7 @@ resource "aws_lambda_function" "visitor_count" {
 }
 
 resource "aws_lambda_permission" "visitor_count" {
-  statement_id  = "AllowVisitorCountAPIInvoke"
+  statement_id  = "${terraform.workspace}-AllowVisitorCountAPIInvoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.visitor_count.function_name
   principal     = "apigateway.amazonaws.com"
