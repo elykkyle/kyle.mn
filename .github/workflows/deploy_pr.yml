@@ -30,7 +30,7 @@ jobs:
         working-directory: terraform/
         run: terraform fmt
         continue-on-error: true
-        
+
       - name: Terraform Init
         id: init
         working-directory: terraform/
@@ -38,7 +38,7 @@ jobs:
 
       - name: Set terraform workspace
         id: tf-workspace
-        run: terraform workspace new $env.GH_BRANCH_NAME
+        run: terraform workspace new $GH_BRANCH_NAME -or-create
         working-directory: terraform/
 
       - name: Terraform Validate
