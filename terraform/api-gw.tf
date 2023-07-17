@@ -1,6 +1,9 @@
 resource "aws_apigatewayv2_api" "visitor_count" {
   name          = "visitor-count-api"
   protocol_type = "HTTP"
+  cors_configuration {
+    allow_origins = [ "https://dev.kyle.mn" ]
+  }
 }
 
 resource "aws_apigatewayv2_integration" "visitor_count" {

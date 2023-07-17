@@ -72,34 +72,3 @@ jobs:
         id: upload-to-s3
         run: |
           aws s3 sync ./src s3://${{ env.S3_ID }} --delete --follow-symlinks
-
-
-      
-
-  # frontend:
-  #   runs-on: ubunutu-latest
-  #   needs: terraform
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-  #   env:
-  #     INVOKEURL: ${{needs.terraform.outputs.invoke_url}}
-  #     S3DOMAIN: ${{needs.terraform.outputs.s3_domain}}
-  #   defaults:
-  #     run:
-  #       working-directory: src/
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: aws-actions/configure-aws-credentials@v2
-  #       with:
-  #         role-to-assume: arn:aws:iam::784714698706:role/TEMP-GH-ACTIONS
-  #         role-session-name: deploy-to-aws
-  #         aws-region: us-east-2
-  #     - name: Update js URL
-  #       id: js-api_url
-  #       run: sed -i -e 's/PLACEHOLDER/${{ env.INVOKEURL }}/' js/counter.js
-  #     - name: Upload site to s3
-  #       id: upload-to-s3
-  #       run: |
-  #         aws s3 sync ./ s3://${{env.S3DOMAIN}} --delete --follow-symlinks
-
