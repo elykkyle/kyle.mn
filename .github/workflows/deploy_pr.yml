@@ -25,21 +25,21 @@ jobs:
       - name: Set Branch Name
         run: echo "GH_BRANCH_NAME=$(git branch --show-current)" >> "$GITHUB_ENV"
 
-      - name: Set terraform workspace
-        id: tf-workspace
-        run: terraform workspace new $env.GH_BRANCH_NAME
-        working-directory: terraform/
-
       - name: Terraform fmt
         id: fmt
         working-directory: terraform/
         run: terraform fmt
         continue-on-error: true
-
+        
       - name: Terraform Init
         id: init
         working-directory: terraform/
         run: terraform init
+
+      - name: Set terraform workspace
+        id: tf-workspace
+        run: terraform workspace new $env.GH_BRANCH_NAME
+        working-directory: terraform/
 
       - name: Terraform Validate
         id: validate
