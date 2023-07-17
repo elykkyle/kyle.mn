@@ -1,4 +1,4 @@
-variable "environment" {
+variable "branch" {
   type    = string
   default = "dev"
 }
@@ -15,8 +15,8 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "kyle.mn-terraform-state"
-    key    = "main/terraform.tfstate"
+    bucket = "${branch}-kyle.mn-terraform-state"
+    key    = "${branch}/terraform.tfstate"
     region = "us-east-2"
   }
 

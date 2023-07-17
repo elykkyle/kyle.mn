@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - "!main"
   pull_request:
     branches:
       - main
@@ -23,10 +23,13 @@ jobs:
           role-session-name: deploy-to-aws
           aws-region: us-east-2
 
+      - name: Set Branch var
+        run: echo "TF_VAR_branch=$(git branch --show-current)" >> $"GITHUB_ENV"
+
       - name: Terraform fmt
         id: fmt
         working-directory: terraform/
-        run: terraform fmt -check
+        run: terraform fmt
         continue-on-error: true
 
       - name: Terraform Init
