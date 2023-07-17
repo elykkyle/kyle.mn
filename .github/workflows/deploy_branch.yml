@@ -1,12 +1,9 @@
-name: Deploy PR for Testing
+name: Deploy Branch for Testing
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - '!kyle.mn/main'
-  pull_request:
-    branches:
+    branches-ignore:
       - main
 
 jobs:
@@ -55,7 +52,8 @@ jobs:
         run: terraform plan -no-color
 
       - name: Terraform Apply
-        id: appply
+        if: 
+        id: apply
         working-directory: terraform/
         run: terraform apply -auto-approve
 
