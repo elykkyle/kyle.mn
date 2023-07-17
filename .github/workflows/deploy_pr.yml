@@ -22,9 +22,13 @@ jobs:
           role-to-assume: arn:aws:iam::784714698706:role/TEMP-GH-ACTIONS
           role-session-name: deploy-to-aws
           aws-region: us-east-2
+      - name: Set Branch Name
+        run: echo "GH_BRANCH_NAME=$(git branch --show-current)" >> "$GITHUB_ENV"
 
-      - name: Set Branch var
-        run: echo "TF_VAR_branch=$(git branch --show-current)" >> $"GITHUB_ENV"
+      - name: Set terraform workspace
+        id: tf-workspace
+        run: terraform workspace new $env.GH_BRANCH_NAME
+        working-directory: terraform/
 
       - name: Terraform fmt
         id: fmt

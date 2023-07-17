@@ -1,8 +1,3 @@
-variable "branch" {
-  type    = string
-  default = "dev"
-}
-
 terraform {
   required_providers {
     aws = {
@@ -15,8 +10,8 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "${branch}-kyle.mn-terraform-state"
-    key    = "${branch}/terraform.tfstate"
+    bucket = "kyle.mn-terraform-state"
+    key    = "main/terraform.tfstate"
     region = "us-east-2"
   }
 

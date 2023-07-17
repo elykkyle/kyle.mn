@@ -16,16 +16,12 @@ resource "aws_acm_certificate" "cert" {
   subject_alternative_names = ["*.kyle.mn"]
   validation_method         = "DNS"
 
-  tags = {
-    Environment = "dev"
-  }
-
   lifecycle {
     create_before_destroy = true
   }
 }
 
-resource "random_pet" "subdomain" { }
+resource "random_pet" "subdomain" {}
 
 resource "aws_route53_record" "cert" {
   provider = aws.root-org
@@ -81,7 +77,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     prefix          = "cloudfront"
   }
 
-  aliases = ["dev.kyle.mn"]
+  aliases = ["kyle.mn"]
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
@@ -134,10 +130,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     }
   }
 
-  tags = {
-    Environment = "development"
-  }
-
   viewer_certificate {
     acm_certificate_arn      = resource.aws_acm_certificate.cert.arn
     ssl_support_method       = "sni-only"
@@ -148,7 +140,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 resource "aws_route53_record" "dns_record" {
   provider = aws.root-org
   zone_id  = data.aws_route53_zone.root.zone_id
-  name     = "dev.kyle.mn"
+  name     = "kyle.mn"
   type     = "A"
   alias {
     name                   = aws_cloudfront_distribution.s3_distribution.domain_name
