@@ -38,7 +38,7 @@ jobs:
 
       - name: Set terraform workspace
         id: tf-workspace
-        run: terraform workspace new $GH_BRANCH_NAME -or-create
+        run: terraform workspace select $GH_BRANCH_NAME -or-create
         working-directory: terraform/
 
       - name: Terraform Validate
