@@ -37,3 +37,8 @@ provider "aws" {
   alias  = "root-org"
   region = "us-east-2"
 }
+
+resource "random_id" "bucket_name" {
+  byte_length = 4
+}
+
