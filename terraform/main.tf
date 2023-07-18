@@ -37,3 +37,9 @@ provider "aws" {
   alias  = "root-org"
   region = "us-east-2"
 }
+
+resource "random_pet" "bucket_name" {
+  keepers = {
+    domain = var.full_domain
+  }
+}
