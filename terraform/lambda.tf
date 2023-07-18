@@ -75,6 +75,11 @@ resource "aws_lambda_function" "visitor_count" {
   function_name = "${terraform.workspace}_increment_visitor_count"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "app.lambda_handler"
+  environment {
+    variables = {
+      "TABLE_NAME" = aws_dynamodb_table.stats-db.name
+    }
+  }
 
   source_code_hash = data.archive_file.visitor_count.output_base64sha256
 

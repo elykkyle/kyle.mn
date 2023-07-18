@@ -45,6 +45,11 @@ module "s3_bucket_for_website" {
 EOF
 
   attach_policy = true
+
+  logging = {
+    target_bucket = module.s3_cf_logging.s3_bucket_id
+    target_prefix = "s3AccessLog/"
+  }
 }
 
 

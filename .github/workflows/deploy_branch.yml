@@ -22,9 +22,6 @@ jobs:
       - name: Set Branch Name
         run: echo "GH_BRANCH_NAME=$(git branch --show-current)" >> "$GITHUB_ENV"
 
-      - name: get env
-        run: env
-
       - name: Terraform fmt
         id: fmt
         working-directory: terraform/
