@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,terraform,macos,node,cypressio
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,visualstudiocode,terraform,macos,node,cypressio
 
+# lambda zip from terraform
+terraform/lambda*.zip
+
 ### CypressIO ###
 # gitignore template for the CypressIO, browser test framework
 # website: https://www.cypress.io/

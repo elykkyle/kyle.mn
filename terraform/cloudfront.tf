@@ -5,9 +5,9 @@ data "aws_route53_zone" "root" {
 }
 
 resource "aws_acm_certificate" "cert" {
-  provider                  = aws.east-1
-  domain_name               = "${terraform.workspace}.kyle.mn"
-  validation_method         = "DNS"
+  provider          = aws.east-1
+  domain_name       = "${terraform.workspace}.kyle.mn"
+  validation_method = "DNS"
 
   lifecycle {
     create_before_destroy = true
@@ -72,10 +72,10 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   aliases = ["${terraform.workspace}.kyle.mn"]
 
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = local.s3_origin_id
-    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+    allowed_methods          = ["GET", "HEAD"]
+    cached_methods           = ["GET", "HEAD"]
+    target_origin_id         = local.s3_origin_id
+    cache_policy_id          = "658327ea-f89d-4fab-a63d-7e88639e58f6"
     origin_request_policy_id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
 
     viewer_protocol_policy = "redirect-to-https"
@@ -148,4 +148,8 @@ module "s3_cf_logging" {
 EOF
 
   attach_policy = true
+}
+
+output "website_root_url" {
+  value = "https://${aws_route53_record.dns_record.name}"
 }

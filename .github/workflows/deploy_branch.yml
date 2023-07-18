@@ -12,6 +12,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      website_url: ${{ steps.set-website-url.outputs.WEBSITE_URL }}
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
@@ -49,7 +51,7 @@ jobs:
         run: terraform plan -no-color
 
       - name: Terraform Apply
-        if: 
+        if:
         id: apply
         working-directory: terraform/
         run: terraform apply -auto-approve
@@ -63,6 +65,11 @@ jobs:
         id: set-s3-domain
         working-directory: terraform/
         run: echo "S3_ID=$(terraform output -raw static_s3_id)" >> "$GITHUB_ENV"
+
+      - name: Set website root URL
+        id: set-website-url
+        working-directory: terraform/
+        run: echo "WEBSITE_URL=$(terraform output -raw website_root_url)" >> $GITHUB_OUTPUTS
 
       - name: Update js URL
         working-directory: frontend/
@@ -80,3 +87,14 @@ jobs:
         id: upload-to-s3
         run: |
           aws s3 sync ./src s3://${{ env.S3_ID }} --delete --follow-symlinks
+
+  cypress-run:
+    runs-on: ubuntu-22.04
+    needs: deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Cypress run
+        env:
+          CYPRESS_BASE_URL: ${{ needs.deploy.outputs.website_url }}
+        uses: cypress-io/github-action@v5
