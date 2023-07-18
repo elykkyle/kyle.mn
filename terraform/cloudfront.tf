@@ -14,8 +14,6 @@ resource "aws_acm_certificate" "cert" {
   }
 }
 
-resource "random_pet" "subdomain" {}
-
 resource "aws_route53_record" "cert" {
   provider = aws.root-org
   for_each = {
@@ -113,7 +111,7 @@ module "s3_cf_logging" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.14.0"
 
-  bucket_prefix = "${terraform.workspace}.kyle.mn-logging-"
+  bucket = "${local.s3_bucket_name}-logs"
   force_destroy = true
 
   versioning = {
