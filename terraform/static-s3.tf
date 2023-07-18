@@ -2,7 +2,7 @@ module "s3_bucket_for_website" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.14.0"
 
-  bucket = "${var.full_domain}-${random_pet.bucket_name.id}"
+  bucket = local.s3_bucket_name
   force_destroy = true
 
   versioning = {

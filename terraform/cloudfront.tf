@@ -111,7 +111,7 @@ module "s3_cf_logging" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.14.0"
 
-  bucket = "${module.s3_bucket_for_website.s3_bucket_id}-logging"
+  bucket = "${local.s3_bucket_name}-logs"
   force_destroy = true
 
   versioning = {

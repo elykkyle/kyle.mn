@@ -43,3 +43,4 @@ resource "random_pet" "bucket_name" {
     domain = var.full_domain
   }
 }
+
