@@ -26,12 +26,12 @@ data "aws_iam_policy_document" "lambda_execution" {
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name               = "iam_role_for_lambda"
+  name               = "${terraform.workspace}-iam_role_for_lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
 resource "aws_iam_policy" "lambda_execution" {
-  name        = "lambda_execution"
+  name        = "${terraform.workspace}-lambda_execution"
   description = "IAM policy for lambda to update DynamoDB table"
   policy      = data.aws_iam_policy_document.lambda_execution.json
 }
@@ -54,7 +54,7 @@ data "aws_iam_policy_document" "lambda_logging" {
 }
 
 resource "aws_iam_policy" "lambda_logging" {
-  name        = "lambda_logging"
+  name        = "${terraform.workspace}-lambda_logging"
   description = "IAM policy for lambda to send logs to CloudWatch"
   policy      = data.aws_iam_policy_document.lambda_logging.json
 }
@@ -72,9 +72,14 @@ data "archive_file" "visitor_count" {
 
 resource "aws_lambda_function" "visitor_count" {
   filename      = "lambda_function_payload.zip"
-  function_name = "increment_visitor_count"
+  function_name = "${terraform.workspace}_increment_visitor_count"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "app.lambda_handler"
+  environment {
+    variables = {
+      "TABLE_NAME" = aws_dynamodb_table.stats-db.name
+    }
+  }
 
   source_code_hash = data.archive_file.visitor_count.output_base64sha256
 
@@ -82,7 +87,7 @@ resource "aws_lambda_function" "visitor_count" {
 }
 
 resource "aws_lambda_permission" "visitor_count" {
-  statement_id  = "AllowVisitorCountAPIInvoke"
+  statement_id  = "${terraform.workspace}-AllowVisitorCountAPIInvoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.visitor_count.function_name
   principal     = "apigateway.amazonaws.com"

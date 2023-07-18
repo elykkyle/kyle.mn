@@ -1,9 +1,10 @@
 import json
 import boto3
+import os
 
 
 client = boto3.client("dynamodb")
-table_name = "cloud-resume-stats"
+table_name = os.environ.get("TABLE_NAME") or "cloud-resume-stats"
 
 
 def lambda_handler(event, context):

@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "stats-db" {
-  name           = "cloud-resume-stats"
+  name           = "${terraform.workspace}-cloud-resume-stats"
   billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1

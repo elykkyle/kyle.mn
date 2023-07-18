@@ -1,8 +1,3 @@
-variable "environment" {
-  type    = string
-  default = "dev"
-}
-
 terraform {
   required_providers {
     aws = {
@@ -16,8 +11,9 @@ terraform {
   }
   backend "s3" {
     bucket = "kyle.mn-terraform-state"
-    key    = "main/terraform.tfstate"
+    key    = "terraform.tfstate"
     region = "us-east-2"
+    dynamodb_table = "kyle.mn-terraform"
   }
 
 }

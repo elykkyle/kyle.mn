@@ -1,9 +1,3 @@
-
-# resource "aws_s3_bucket_acl" "b_acl" {
-#   bucket = aws_s3_bucket.b.id
-#   acl    = "private"
-# }
-
 data "aws_route53_zone" "root" {
   provider     = aws.root-org
   name         = "kyle.mn"
@@ -11,21 +5,16 @@ data "aws_route53_zone" "root" {
 }
 
 resource "aws_acm_certificate" "cert" {
-  provider                  = aws.east-1
-  domain_name               = "kyle.mn"
-  subject_alternative_names = ["*.kyle.mn"]
-  validation_method         = "DNS"
-
-  tags = {
-    Environment = "dev"
-  }
+  provider          = aws.east-1
+  domain_name       = var.full_domain
+  validation_method = "DNS"
 
   lifecycle {
     create_before_destroy = true
   }
 }
 
-resource "random_pet" "subdomain" { }
+resource "random_pet" "subdomain" {}
 
 resource "aws_route53_record" "cert" {
   provider = aws.root-org
@@ -48,11 +37,10 @@ resource "aws_route53_record" "cert" {
 resource "aws_acm_certificate_validation" "cert" {
   provider        = aws.east-1
   certificate_arn = aws_acm_certificate.cert.arn
-  # validation_record_fqdns = [for record in aws_route53_record.cert : record.fqdn]
 }
 
 locals {
-  s3_origin_id = "kylemn"
+  s3_origin_id = "${terraform.workspace}-kylemn"
 }
 
 resource "aws_cloudfront_origin_access_control" "s3_oac" {
@@ -65,7 +53,7 @@ resource "aws_cloudfront_origin_access_control" "s3_oac" {
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name              = module.s3_bucket_for_website.s3_bucket_bucket_domain_name
+    domain_name              = module.s3_bucket_for_website.s3_bucket_bucket_regional_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.s3_oac.id
     origin_id                = local.s3_origin_id
   }
@@ -81,47 +69,15 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     prefix          = "cloudfront"
   }
 
-  aliases = ["dev.kyle.mn"]
+  aliases = [var.full_domain]
 
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = local.s3_origin_id
+    allowed_methods          = ["GET", "HEAD"]
+    cached_methods           = ["GET", "HEAD"]
+    target_origin_id         = local.s3_origin_id
+    cache_policy_id          = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+    origin_request_policy_id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
 
-    forwarded_values {
-      query_string = false
-
-      cookies {
-        forward = "none"
-      }
-    }
-
-    viewer_protocol_policy = "allow-all"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
-  }
-
-  # Cache behavior with precedence 0
-  ordered_cache_behavior {
-    path_pattern     = "/*"
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = local.s3_origin_id
-
-    forwarded_values {
-      query_string = false
-      headers      = ["Origin"]
-
-      cookies {
-        forward = "none"
-      }
-    }
-
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
-    compress               = true
     viewer_protocol_policy = "redirect-to-https"
   }
 
@@ -134,10 +90,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     }
   }
 
-  tags = {
-    Environment = "development"
-  }
-
   viewer_certificate {
     acm_certificate_arn      = resource.aws_acm_certificate.cert.arn
     ssl_support_method       = "sni-only"
@@ -148,7 +100,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 resource "aws_route53_record" "dns_record" {
   provider = aws.root-org
   zone_id  = data.aws_route53_zone.root.zone_id
-  name     = "dev.kyle.mn"
+  name     = var.full_domain
   type     = "A"
   alias {
     name                   = aws_cloudfront_distribution.s3_distribution.domain_name
@@ -161,7 +113,7 @@ module "s3_cf_logging" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.14.0"
 
-  bucket_prefix = "kyle.mn-logging-"
+  bucket_prefix = "${terraform.workspace}.kyle.mn-logging-"
   force_destroy = true
 
   versioning = {
@@ -192,4 +144,8 @@ module "s3_cf_logging" {
 EOF
 
   attach_policy = true
+}
+
+output "website_root_url" {
+  value = "https://${aws_route53_record.dns_record.name}"
 }
