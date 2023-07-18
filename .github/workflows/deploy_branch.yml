@@ -69,7 +69,7 @@ jobs:
       - name: Set website root URL
         id: set-website-url
         working-directory: terraform/
-        run: echo "WEBSITE_URL=$(terraform output -raw website_root_url)" >> $GITHUB_OUTPUTS
+        run: echo "WEBSITE_URL=$(terraform output -raw website_root_url)" >> $GITHUB_OUTPUT
 
       - name: Update js URL
         working-directory: frontend/
