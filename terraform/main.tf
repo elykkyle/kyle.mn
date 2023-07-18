@@ -38,9 +38,7 @@ provider "aws" {
   region = "us-east-2"
 }
 
-resource "random_pet" "bucket_name" {
-  keepers = {
-    domain = var.full_domain
-  }
+resource "random_id" "bucket_name" {
+  byte_length = 4
 }
 

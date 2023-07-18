@@ -4,5 +4,5 @@ variable "full_domain" {
 }
 
 locals {
-  s3_bucket_name = "${var.full_domain}-${random_pet.bucket_name.id}"
+  s3_bucket_name = "${var.full_domain}-${random_id.bucket_name.dec}"
 }
