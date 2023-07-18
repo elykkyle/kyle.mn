@@ -1,9 +1,3 @@
-
-# resource "aws_s3_bucket_acl" "b_acl" {
-#   bucket = aws_s3_bucket.b.id
-#   acl    = "private"
-# }
-
 data "aws_route53_zone" "root" {
   provider     = aws.root-org
   name         = "kyle.mn"
@@ -43,7 +37,6 @@ resource "aws_route53_record" "cert" {
 resource "aws_acm_certificate_validation" "cert" {
   provider        = aws.east-1
   certificate_arn = aws_acm_certificate.cert.arn
-  # validation_record_fqdns = [for record in aws_route53_record.cert : record.fqdn]
 }
 
 locals {

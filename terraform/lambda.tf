@@ -26,12 +26,12 @@ data "aws_iam_policy_document" "lambda_execution" {
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name               = "iam_role_for_lambda"
+  name               = "${terraform.workspace}-iam_role_for_lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
 resource "aws_iam_policy" "lambda_execution" {
-  name        = "lambda_execution"
+  name        = "${terraform.workspace}-lambda_execution"
   description = "IAM policy for lambda to update DynamoDB table"
   policy      = data.aws_iam_policy_document.lambda_execution.json
 }
@@ -54,7 +54,7 @@ data "aws_iam_policy_document" "lambda_logging" {
 }
 
 resource "aws_iam_policy" "lambda_logging" {
-  name        = "lambda_logging"
+  name        = "${terraform.workspace}-lambda_logging"
   description = "IAM policy for lambda to send logs to CloudWatch"
   policy      = data.aws_iam_policy_document.lambda_logging.json
 }
