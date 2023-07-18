@@ -1,11 +1,15 @@
-name: examine env on delete
-on:
-  delete
-
+name: Branch Deleted
+on: delete
 jobs:
-  env:
+  delete:
+    if: github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
     steps:
-      - name: get env
-        run: env
-  
+      - name: Select TF Workspace
+        run: terraform workspace select ${{ github.event.ref }}
+      - name: Destroy resources
+        run: terraform destroy
+      - name: delete TF Workspace
+        run: |
+          terraform workspace select default
+          terraform workspace delete ${{ github.event.ref }}
