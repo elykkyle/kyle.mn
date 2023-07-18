@@ -54,7 +54,7 @@ jobs:
         if:
         id: apply
         working-directory: terraform/
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -var="full_domain=${{env.GH_BRANCH_NAME}}.kyle.mn"
 
       - name: Set Invoke URL
         id: set-invoke-url
