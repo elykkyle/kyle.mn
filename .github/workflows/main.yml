@@ -1,0 +1,11 @@
+name: examine env on delete
+on:
+  delete
+
+jobs:
+  env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get env
+        run: env
+  
