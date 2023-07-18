@@ -79,10 +79,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     origin_request_policy_id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
 
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 86400
-    compress               = true
   }
 
   price_class = "PriceClass_100"
