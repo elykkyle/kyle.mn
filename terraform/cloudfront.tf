@@ -6,7 +6,7 @@ data "aws_route53_zone" "root" {
 
 resource "aws_acm_certificate" "cert" {
   provider          = aws.east-1
-  domain_name       = "${terraform.workspace}.kyle.mn"
+  domain_name       = var.full_domain
   validation_method = "DNS"
 
   lifecycle {
@@ -69,7 +69,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     prefix          = "cloudfront"
   }
 
-  aliases = ["${terraform.workspace}.kyle.mn"]
+  aliases = [var.full_domain]
 
   default_cache_behavior {
     allowed_methods          = ["GET", "HEAD"]
@@ -100,7 +100,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 resource "aws_route53_record" "dns_record" {
   provider = aws.root-org
   zone_id  = data.aws_route53_zone.root.zone_id
-  name     = "${terraform.workspace}.kyle.mn"
+  name     = var.full_domain
   type     = "A"
   alias {
     name                   = aws_cloudfront_distribution.s3_distribution.domain_name

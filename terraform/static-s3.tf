@@ -1,21 +1,8 @@
-# resource "random_id" "s3" {
-#   byte_length = 1
-# }
-
-# resource "aws_s3_bucket" "staticfiles" {
-#   bucket = "kyle.mn-${random_id.s3.dec}"
-# }
-
-
-# output "s3_bucket_website" {
-#   value = aws_s3_bucket.staticfiles.bucket
-# }
-
 module "s3_bucket_for_website" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.14.0"
 
-  bucket_prefix = "${terraform.workspace}.kyle.mn-"
+  bucket_prefix = "${var.full_domain}-"
   force_destroy = true
 
   versioning = {

@@ -48,7 +48,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: terraform/
-        run: terraform plan -no-color
+        run: terraform plan -no-color -var="full_domain=${{env.GH_BRANCH_NAME}}.kyle.mn"
 
       - name: Terraform Apply
         if:
