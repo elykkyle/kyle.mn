@@ -9,6 +9,11 @@ jobs:
         working-directory: terraform/
     steps:
       - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::784714698706:role/TEMP-GH-ACTIONS
+          role-session-name: delete-branch
+          aws-region: us-east-2
       - name: Terraform init
         run: terraform init
       - name: Select TF Workspace
