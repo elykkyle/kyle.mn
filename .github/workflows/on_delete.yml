@@ -9,6 +9,8 @@ jobs:
         working-directory: terraform/
     steps:
       - uses: actions/checkout@v3
+      - name: Terraform init
+        run: terraform init
       - name: Select TF Workspace
         run: terraform workspace select ${{ github.event.ref }}
       - name: Destroy resources
