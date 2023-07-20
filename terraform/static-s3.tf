@@ -3,7 +3,7 @@ module "s3_bucket_for_website" {
   version = "3.14.0"
 
   bucket = local.s3_bucket_name
-  force_destroy = true
+  force_destroy = var.is_temporary
 
   versioning = {
     enabled = true
