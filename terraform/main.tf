@@ -20,7 +20,7 @@ terraform {
 provider "aws" {
   region = "us-east-2"
   assume_role {
-    role_arn = "arn:aws:iam::318339346456:role/OrganizationAccountAccessRole"
+    role_arn = var.aws_role_arn
   }
 }
 
@@ -28,7 +28,7 @@ provider "aws" {
   region = "us-east-1"
   alias  = "east-1"
   assume_role {
-    role_arn = "arn:aws:iam::318339346456:role/OrganizationAccountAccessRole"
+    role_arn = var.aws_role_arn
   }
 }
 

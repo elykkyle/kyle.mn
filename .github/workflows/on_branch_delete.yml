@@ -22,7 +22,7 @@ jobs:
       - name: Select TF Workspace
         run: terraform workspace select ${{ github.event.ref }}
       - name: Destroy resources
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve -var-file="development.tfvars"
       - name: delete TF Workspace
         run: |
           terraform workspace select default
