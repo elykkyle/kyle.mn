@@ -9,10 +9,10 @@ locals {
 
 variable "is_temporary" {
   default = true
-  type = bool
+  type    = bool
 }
 
 variable "aws_role_arn" {
-    default = ""
-    type = string
+  default = ""
+  type    = string
 }
