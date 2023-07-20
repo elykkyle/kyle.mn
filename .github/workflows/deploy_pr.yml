@@ -1,10 +1,9 @@
-name: Deploy Branch to Development
+name: Deploy PR to Staging
 
 on:
   workflow_dispatch:
-  push:
-    branches-ignore:
-      - main
+  pull_request:
+    types: [reopened, opened, synchronize, edited]        
 
 jobs:
   deploy:
@@ -37,7 +36,7 @@ jobs:
 
       - name: Set terraform workspace
         id: tf-workspace
-        run: terraform workspace select -or-create ${{env.GH_BRANCH_NAME}}
+        run: terraform workspace select -or-create ${{env.GH_BRANCH_NAME}}-staging
         working-directory: terraform/
 
       - name: Terraform Validate
@@ -48,13 +47,13 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: terraform/
-        run: terraform plan -no-color -var="full_domain=${{env.GH_BRANCH_NAME}}.kyle.mn" -var-file="development.tfvars"
+        run: terraform plan -no-color -var="full_domain=${{env.GH_BRANCH_NAME}}-staging.kyle.mn" -var-file="staging.tfvars"
 
       - name: Terraform Apply
         if:
         id: apply
         working-directory: terraform/
-        run: terraform apply -auto-approve -var="full_domain=${{env.GH_BRANCH_NAME}}.kyle.mn" -var-file="development.tfvars"
+        run: terraform apply -auto-approve -var="full_domain=${{env.GH_BRANCH_NAME}}-staging.kyle.mn" -var-file="staging.tfvars"
 
       - name: Set Invoke URL
         id: set-invoke-url
@@ -79,7 +78,7 @@ jobs:
       - name: Configure AWS credentials for account
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::318339346456:role/github-actions-s3
+          role-to-assume: arn:aws:iam::757137068065:role/github-actions-s3
           aws-region: us-east-2
 
       - name: Upload site to s3
