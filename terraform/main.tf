@@ -10,9 +10,9 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "kyle.mn-terraform-state"
-    key    = "terraform.tfstate"
-    region = "us-east-2"
+    bucket         = "kyle.mn-terraform-state"
+    key            = "terraform.tfstate"
+    region         = "us-east-2"
     dynamodb_table = "kyle.mn-terraform"
   }
 
