@@ -48,13 +48,13 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: terraform/
-        run: terraform plan -no-color -var="full_domain=${{env.GH_BRANCH_NAME}}.kyle.mn -var-file="development.tfvars"
+        run: terraform plan -no-color -var="full_domain=${{env.GH_BRANCH_NAME}}.kyle.mn" -var-file="development.tfvars"
 
       - name: Terraform Apply
         if:
         id: apply
         working-directory: terraform/
-        run: terraform apply -auto-approve -var="full_domain=${{env.GH_BRANCH_NAME}}.kyle.mn -var-file="development.tfvars"
+        run: terraform apply -auto-approve -var="full_domain=${{env.GH_BRANCH_NAME}}.kyle.mn" -var-file="development.tfvars"
 
       - name: Set Invoke URL
         id: set-invoke-url
