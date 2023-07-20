@@ -1,7 +1,6 @@
 name: Deploy PR to Staging
 
 on:
-  workflow_dispatch:
   pull_request:
     types: [reopened, opened, synchronize, edited]        
 
