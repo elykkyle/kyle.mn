@@ -10,6 +10,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+
     defaults:
       run:
         working-directory: terraform/
@@ -34,7 +35,11 @@ jobs:
 
       - name: Destroy resources
         run: terraform destroy -auto-approve -var-file="staging.tfvars"
-        
+
+      - name: Destroy resources
+        working-directory: terraform/
+        run: terraform destroy -auto-approve -var-file="staging.tfvars"
+
       - name: delete TF Workspace
         run: |
           terraform workspace select default
