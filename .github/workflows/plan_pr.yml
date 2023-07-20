@@ -1,0 +1,80 @@
+name: 'Plan deployment to prod'
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: "Terraform Plan"
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS creds
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::784714698706:role/github-actions-kyle.mn
+          role-session-name: deploy-to-aws
+          aws-region: us-east-2
+      - name: Terraform Init
+        id: init
+        working-directory: terraform/
+        run: terraform init
+  
+      - name: Set terraform workspace
+        id: tf-workspace
+        run: terraform workspace select main
+        working-directory: terraform/
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: terraform/
+        run: terraform validate
+  
+      - name: Terraform Plan
+        id: plan
+        working-directory: terraform/
+        run: terraform plan -no-color -var-file="prod.tfvars"
+        continue-on-error: true
+      
+      - uses: actions/github-script@v6
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Plan Output')
+            });
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Terraform Plan Output</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+  
+        
