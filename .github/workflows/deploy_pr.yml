@@ -36,7 +36,7 @@ jobs:
 
       - name: Set terraform workspace
         id: tf-workspace
-        run: terraform workspace select -or-create ${{env.GH_BRANCH_NAME}}-staging
+        run: terraform workspace select -or-create "${{env.GH_BRANCH_NAME}}-staging"
         working-directory: terraform/
 
       - name: Terraform Validate
