@@ -21,7 +21,9 @@ jobs:
           role-session-name: deploy-to-aws
           aws-region: us-east-2
       - name: Set Branch Name
-        run: echo "GH_BRANCH_NAME=$(git branch --show-current)" >> "$GITHUB_ENV"
+        run: |
+            echo "GH_BRANCH_NAME=$(git branch --show-current)" >> "$GITHUB_ENV"
+            echo ${{ env.GH_BRANCH_NAME }}
 
       - name: Terraform fmt
         id: fmt
