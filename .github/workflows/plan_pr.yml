@@ -2,8 +2,7 @@ name: 'Plan deployment to prod'
 
 on:
   pull_request:
-    branches:
-      - main
+    types: [reopened, opened, synchronize, edited]
 
 jobs:
   terraform:
