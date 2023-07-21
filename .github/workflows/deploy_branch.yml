@@ -65,6 +65,11 @@ jobs:
         working-directory: terraform/
         run: echo "S3_ID=$(terraform-bin output -raw static_s3_id)" >> "$GITHUB_ENV"
 
+      - name: Set Cloudfront Distribution ID
+        id: set-cf-id
+        working-directory: terraform/
+        run: echo "CF_ID=$(terraform-bin output -raw cloudfront_distro_id)" >> "$GITHUB_ENV"
+
       - name: Set website root URL
         id: set-website-url
         working-directory: terraform/
@@ -86,7 +91,9 @@ jobs:
         id: upload-to-s3
         run: |
           aws s3 sync ./src s3://${{ env.S3_ID }} --delete --follow-symlinks
-      
+          aws cloudfront create-invalidation --distribution-id ${{ env.CF_ID }} --paths "/*"
+
+
       - name: Show URL
         run: echo "Deployed at ${{ steps.set-website-url.outputs.WEBSITE_URL }}" >> $GITHUB_STEP_SUMMARY
 

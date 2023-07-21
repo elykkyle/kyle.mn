@@ -147,3 +147,7 @@ EOF
 output "website_root_url" {
   value = "https://${aws_route53_record.dns_record.name}"
 }
+
+output "cloudfront_distro_id" {
+  value = aws_cloudfront_distribution.s3_distribution.id
+}
