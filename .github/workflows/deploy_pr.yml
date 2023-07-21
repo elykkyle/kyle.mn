@@ -87,7 +87,7 @@ jobs:
           aws s3 sync ./src s3://${{ env.S3_ID }} --delete --follow-symlinks
 
       - name: Show URL
-        run: echo "Deployed at ${{ steps.set-website-url.outputs.WEBSITE_URL }}"
+        run: echo "Deployed at ${{ steps.set-website-url.outputs.WEBSITE_URL }}" >> $GITHUB_STEP_SUMMARY
 
   cypress-run:
     runs-on: ubuntu-22.04
