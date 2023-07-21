@@ -36,7 +36,7 @@ jobs:
 
       - name: Set terraform workspace
         id: tf-workspace
-        run: terraform workspace select main"
+        run: terraform workspace select main
         working-directory: terraform/
 
       - name: Terraform Validate
