@@ -19,10 +19,8 @@ jobs:
           role-to-assume: arn:aws:iam::784714698706:role/github-actions-kyle.mn
           role-session-name: deploy-to-aws
           aws-region: us-east-2
-      - name: Set Branch Name
-        run: |
-            echo "GH_BRANCH_NAME=${{github.head_ref}}" >> "$GITHUB_ENV"
-            echo ${{ env.GH_BRANCH_NAME }}
+      
+      - uses: hashicorp/setup-terraform@v2
 
       - name: Terraform fmt
         id: fmt
@@ -37,7 +35,7 @@ jobs:
 
       - name: Set terraform workspace
         id: tf-workspace
-        run: terraform workspace select -or-create "${{env.GH_BRANCH_NAME}}-staging"
+        run: terraform workspace select -or-create "${{github.head_ref}}-staging"
         working-directory: terraform/
 
       - name: Terraform Validate
@@ -48,28 +46,28 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: terraform/
-        run: terraform plan -no-color -var="full_domain=${{env.GH_BRANCH_NAME}}-staging.kyle.mn" -var-file="staging.tfvars"
+        run: terraform plan -no-color -var="full_domain=${{github.head_ref}}-staging.kyle.mn" -var-file="staging.tfvars"
 
       - name: Terraform Apply
         if:
         id: apply
         working-directory: terraform/
-        run: terraform apply -auto-approve -var="full_domain=${{env.GH_BRANCH_NAME}}-staging.kyle.mn" -var-file="staging.tfvars"
+        run: terraform apply -auto-approve -var="full_domain=${{github.head_ref}}-staging.kyle.mn" -var-file="staging.tfvars"
 
       - name: Set Invoke URL
         id: set-invoke-url
         working-directory: terraform/
-        run: echo "INVOKE_URL=$(terraform output -raw invoke_url)" >> "$GITHUB_ENV"
+        run: echo "INVOKE_URL=$(terraform-bin output -raw invoke_url)" >> "$GITHUB_ENV"
 
       - name: Set Static S3 domain
         id: set-s3-domain
         working-directory: terraform/
-        run: echo "S3_ID=$(terraform output -raw static_s3_id)" >> "$GITHUB_ENV"
+        run: echo "S3_ID=$(terraform-bin output -raw static_s3_id)" >> "$GITHUB_ENV"
 
       - name: Set website root URL
         id: set-website-url
         working-directory: terraform/
-        run: echo "WEBSITE_URL=$(terraform output -raw website_root_url)" >> $GITHUB_OUTPUT
+        run: echo "WEBSITE_URL=$(terraform-bin output -raw website_root_url)" >> $GITHUB_OUTPUT
 
       - name: Update js URL
         working-directory: frontend/
@@ -87,6 +85,9 @@ jobs:
         id: upload-to-s3
         run: |
           aws s3 sync ./src s3://${{ env.S3_ID }} --delete --follow-symlinks
+
+      - name: Show URL
+        run: echo "Deployed at ${{ steps.set-website-url.outputs.WEBSITE_URL }}" >> $GITHUB_STEP_SUMMARY
 
   cypress-run:
     runs-on: ubuntu-22.04
