@@ -1,0 +1,116 @@
+name: Deploy to prod
+
+on:
+  push:
+    branches:
+      - main    
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      website_url: ${{ steps.set-website-url.outputs.WEBSITE_URL }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::784714698706:role/github-actions-kyle.mn
+          role-session-name: deploy-to-aws
+          aws-region: us-east-2
+      
+      - uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform fmt
+        id: fmt
+        working-directory: terraform/
+        run: terraform fmt
+        continue-on-error: true
+
+      - name: Terraform Init
+        id: init
+        working-directory: terraform/
+        run: terraform init
+
+      - name: Set terraform workspace
+        id: tf-workspace
+        run: terraform workspace select main"
+        working-directory: terraform/
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: terraform/
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: terraform/
+        run: terraform plan -no-color -var-file="prod.tfvars"
+
+      - name: Terraform Apply
+        if:
+        id: apply
+        working-directory: terraform/
+        run: terraform apply -auto-approve -var-file="prod.tfvars"
+
+      - name: Set Invoke URL
+        id: set-invoke-url
+        working-directory: terraform/
+        run: echo "INVOKE_URL=$(terraform-bin output -raw invoke_url)" >> "$GITHUB_ENV"
+
+      - name: Set Static S3 domain
+        id: set-s3-domain
+        working-directory: terraform/
+        run: echo "S3_ID=$(terraform-bin output -raw static_s3_id)" >> "$GITHUB_ENV"
+
+      - name: Set website root URL
+        id: set-website-url
+        working-directory: terraform/
+        run: echo "WEBSITE_URL=$(terraform-bin output -raw website_root_url)" >> $GITHUB_OUTPUT
+
+      - name: Update js URL
+        working-directory: frontend/
+        id: js-api_url
+        run: sed -i -e 's&PLACEHOLDER&${{ env.INVOKE_URL }}&' src/js/counter.js
+
+      - name: Configure AWS credentials for account
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::382878041746:role/github-actions-s3
+          aws-region: us-east-2
+
+      - name: Upload site to s3
+        working-directory: frontend/
+        id: upload-to-s3
+        run: |
+          aws s3 sync ./src s3://${{ env.S3_ID }} --delete --follow-symlinks
+
+      - name: Show URL
+        run: echo "Deployed at ${{ steps.set-website-url.outputs.WEBSITE_URL }}" >> $GITHUB_STEP_SUMMARY
+
+  cypress-run:
+    runs-on: ubuntu-22.04
+    needs: deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Cypress run
+        env:
+          CYPRESS_BASE_URL: ${{ needs.deploy.outputs.website_url }}
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: frontend/
+      - uses: actions/upload-artifact@v3
+        # add the line below to store screenshots only on failures
+        # if: failure()
+        with:
+          name: cypress-screenshots
+          path: frontend/cypress/screenshots
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      - uses: actions/upload-artifact@v3
+        with:
+          name: cypress-videos
+          path: frontend/cypress/videos
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
