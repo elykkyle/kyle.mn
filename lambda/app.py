@@ -12,7 +12,7 @@ def lambda_handler(event, context):
     data = client.update_item(
         TableName=table_name,
         Key={"stats": {"S": "viewCount"}},
-        UpdateExpression="SET viewCount = viewCount + :i",
+        UpdateExpression="ADD viewCount :i",
         ExpressionAttributeValues={":i": {"N": "1"}},
         ReturnValues="UPDATED_NEW",
     )
