@@ -6,7 +6,7 @@ resource "aws_dynamodb_table" "stats-db" {
   hash_key       = "ip_hash"
 
   attribute {
-    name = "stats"
+    name = "ip_hash"
     type = "S"
   }
 }
