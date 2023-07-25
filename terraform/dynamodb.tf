@@ -3,24 +3,12 @@ resource "aws_dynamodb_table" "stats-db" {
   billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1
-  hash_key       = "stats"
+  hash_key       = "ip_hash"
 
   attribute {
-    name = "stats"
+    name = "ip_hash"
     type = "S"
   }
-}
-
-resource "aws_dynamodb_table_item" "view-count" {
-  table_name = aws_dynamodb_table.stats-db.name
-  hash_key   = aws_dynamodb_table.stats-db.hash_key
-
-  item = <<ITEM
-  {
-      "stats": {"S": "viewCount"},
-      "viewCount": {"N": "0"}
-  }
-  ITEM
 }
 
 resource "aws_appautoscaling_target" "dynamodb_table_read_target" {
