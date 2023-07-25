@@ -11,8 +11,7 @@ fetch(countRequest)
     return res.json()
   })
   .then((data) => {
-    console.log(data.viewCount.N)
-    visitorCount.innerText = data.viewCount.N
+    visitorCount.innerText = data
   })
   .catch((error) => {
     console.error(error)

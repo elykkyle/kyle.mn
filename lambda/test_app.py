@@ -17,20 +17,20 @@ class TestLambdaFunction(unittest.TestCase):
 
         self.dynamodb.create_table(
             TableName=self.table_name,
-            KeySchema=[{'AttributeName': 'stats', 'KeyType': 'HASH'}],
-            AttributeDefinitions=[{'AttributeName': 'stats', 'AttributeType': 'S'}],
+            KeySchema=[{'AttributeName': 'ip_hash', 'KeyType': 'HASH'}],
+            AttributeDefinitions=[{'AttributeName': 'ip_hash', 'AttributeType': 'S'}],
             ProvisionedThroughput={'ReadCapacityUnits': 1, 'WriteCapacityUnits': 1}
         )
         self.table = self.dynamodb.Table(self.table_name)
         # self.table.put_item(Item={"stats": "viewCount", "viewCount": 0})
 
     def test_get_req(self):
-        event = {'httpMethod': 'GET'}
+        event = {'httpMethod': 'GET', 'requestContext': {'identity' : {'sourceIp': '192.168.1.1'}}}
         response = lambda_handler(event, None)
         body = response['body']
 
         self.assertEqual(response['statusCode'], 200)
-        self.assertIn('"viewCount": {"N": "1"}', body)
+        self.assertEqual(1, body)
 
 if __name__ == '__main__':
     unittest.main()
